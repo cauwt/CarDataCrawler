@@ -2,7 +2,7 @@
 import scrapy
 import re
 
-from utils.mysqldbhelper import MysqldbHelper
+from utils.mysqldb_helper import MysqldbHelper
 
 from yichecar.items import YichecarItem
 

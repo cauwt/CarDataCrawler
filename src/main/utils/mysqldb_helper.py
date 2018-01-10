@@ -39,6 +39,12 @@ class MysqldbHelper:
             # 带参数的更新方法,eg:sql='insert into pythontest values(%s,%s,%s,now()',params=(6,'C#','good book')
 
     def update_by_param(self, sql, params):
+        """
+
+        :param sql:
+        :param params:
+        :return:
+        """
         try:
             con = self.get_connection()
             cur = con.cursor()

@@ -7,5 +7,13 @@
 # version: 
 # description:
 # ----------------------------------------------------------------------------------------------------------------------
+import sys
 
+from spiders.yiche_dealer import YicheDealer
 
+if __name__ == '__main__':
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+
+    yiche_spider = YicheDealer()
+    yiche_spider.get_main_brand()
