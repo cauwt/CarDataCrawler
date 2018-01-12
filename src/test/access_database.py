@@ -17,6 +17,9 @@ def main():
     except MySQLdb.Error, e:
         print "Mysql Error %d: %s" % (e.args[0], e.args[1])
         conn.rollback()
+
+
+
     pass
 
 if __name__ == '__main__':

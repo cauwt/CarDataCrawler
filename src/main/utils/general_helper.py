@@ -18,7 +18,7 @@ import requests
 logger = logging.getLogger("logger01")
 
 
-def get_now_date():
+def get_now():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
 

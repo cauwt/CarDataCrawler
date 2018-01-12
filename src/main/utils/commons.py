@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------------------------------------------------
-# file: launcher
+# file: commons
 # author: eva
-# date: 2018/1/8
+# date: 2018/1/12
 # version: 
 # description:
 # ----------------------------------------------------------------------------------------------------------------------
-import sys
 
-from spiders.yiche_dealer import YicheDealer
+import logging.config
+import logging
+from utils.mysqldb_helper import MysqldbHelper
 
-if __name__ == '__main__':
-    reload(sys)
-    sys.setdefaultencoding("utf-8")
+logging.config.fileConfig("../../config/logger.conf")
+logger = logging.getLogger("logger01")
+mysql = MysqldbHelper()
 
-    yiche_spider = YicheDealer()
-    yiche_spider.crawl()
+
