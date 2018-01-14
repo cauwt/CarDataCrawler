@@ -15,8 +15,19 @@ import logging
 
 import requests
 
+import commons
+
+import random
+
 logger = logging.getLogger("logger01")
 
+user_agent_list = []
+f = open('../../config/user_agent.txt', 'r')
+for date_line in f:
+    user_agent_list.append(date_line.replace('\r\n', ''))
+
+
+# user_agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'
 
 def get_now():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
@@ -29,10 +40,11 @@ def get_json_response(url):
     :param url:
     :return:
     """
-    response = None
+    user_agent = random.choice(user_agent_list).strip("\r\n")
+    logger.debug("user-agent: %s " % user_agent)
     request = urllib2.Request(url)
     request.add_header('User-Agent',
-                       'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36')
+                       user_agent)
     retries = 3
     while (retries > 0):
         try:
@@ -44,6 +56,8 @@ def get_json_response(url):
             retries -= 1
             logger.debug("%s times to retry" % format(str(retries)))
             time.sleep(5)
+    if retries ==0:
+        raise
     try:
         response = json.loads(content)
     except Exception, e:
@@ -61,9 +75,11 @@ def get_response(url, keep_alive=True):
     :return:
     """
     response = None
+    user_agent = random.choice(user_agent_list).strip("\r\n ")
+    logger.debug("user-agent: %s " % user_agent)
     request = urllib2.Request(url)
-    request.add_header('User-Agent',
-                       'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36')
+    request.add_header('User-Agent', user_agent)
+    #                   'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36')
     retries = 3
     while retries > 0:
         try:
@@ -78,7 +94,8 @@ def get_response(url, keep_alive=True):
             retries -= 1
             logger.debug("%s times left to retry" % format(str(retries)))
             time.sleep(5)
-
+    if retries ==0:
+        raise
     return response
 
 
