@@ -4,7 +4,6 @@
 
 import MySQLdb
 
-
 class MysqldbHelper:
 
     def get_connection(self):
@@ -33,6 +32,7 @@ class MysqldbHelper:
             return fc
         except MySQLdb.Error, e:
             print "Mysqldb Error:%s" % e
+            raise
         finally:
             cur.close()
             con.close()
@@ -54,6 +54,7 @@ class MysqldbHelper:
         except MySQLdb.Error, e:
             con.rollback()
             print "Mysqldb Error:%s" % e
+            raise
         finally:
             cur.close()
             con.close()
@@ -69,6 +70,7 @@ class MysqldbHelper:
         except MySQLdb.Error, e:
             con.rollback()
             print "Mysqldb Error:%s" % e
+            raise
         finally:
             cur.close()
             con.close()
@@ -88,6 +90,7 @@ class MysqldbHelper:
         except MySQLdb.Error, e:
             con.rollback()
             print "Mysqldb Error:%s" % e
+            raise
         finally:
             cur.close()
             con.close()
@@ -107,6 +110,7 @@ class MysqldbHelper:
         except MySQLdb.Error, e:
             con.rollback()
             print "Mysqldb Error:%s" % e
+            raise
         finally:
             cur.close()
             con.close()

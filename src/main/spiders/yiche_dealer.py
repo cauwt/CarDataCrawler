@@ -77,7 +77,6 @@ class YicheDealer(object):
             p['name'] = re.findall(r'(?<=0\">).*?(?=<)', str(province))[0].decode('utf-8')
             p['show'] = p['url'].split('/')[1].decode('utf-8')
             p['num'] = re.findall(r'(?<=\().*?(?=\))', str(province))[0]
-            # print p['url'],p['name'],p['show']
             now_time = general_helper.get_now()
             sql = u"insert into province (`name`,`show`,`url`,`create_time`)\
                values ( %s,%s,%s,%s)"
@@ -256,6 +255,7 @@ class YicheDealer(object):
             if brand['num'] == 0:  # 品牌后数字为0即该品牌没有商家
                 continue
             else:
+                logger.info("get dealers of %s, %s, %s" % (mbrandname, bname, brand['num'] or 0))
                 burl = general_helper.build_url(self.main_url, brand['url'])
                 bhtml = general_helper.get_response(burl)
                 bsoup = BeautifulSoup(bhtml, 'lxml')
@@ -263,9 +263,9 @@ class YicheDealer(object):
                     plist = self.get_location(bsoup, 'ul', 'layer-txt-list')
                 except Exception, e:
                     plist = self.get_province(self.main_url, bshow)  # 此时采取第二种方案
-                    print bname, len(plist), ' this brand dont have dealer'
+                    logger.critical("%s, %s, %s" % (bname, len(plist), ' this brand don\'t have dealer'))
+                    raise
                 # brand['location']=[]
-                print 'success get province'  # 成功获取品牌覆盖省和直辖市
                 if len(plist) == 0:  # 有的品牌无法从商家列表上边的区域位置按钮弹层中获得该品牌的覆盖的地区，会抛出异常，虽然经过方案二的处理但是有的品牌下没有覆盖省及直辖市，此时plist=[]
                     continue
                 else:
@@ -279,6 +279,7 @@ class YicheDealer(object):
                             pnum = int(p['num'])
                         except Exception, e:
                             logger.critical(e.message)
+                            raise
                         finally:
                             pnum = 0
 
@@ -316,8 +317,8 @@ class YicheDealer(object):
                                         try:
                                             llist = self.get_loc(c, csoup)  # 获取城市下属区县
                                         except Exception, e:
-                                            print brand['name'], p['name'], c['name']
-
+                                            logger.critical("%s, %s, %s" % (brand['name'], p['name'], c['name']))
+                                            raise
                                         for l in llist:  # 获取每个商家信息
                                             llurl = general_helper.build_url(self.main_url, l['url'])
                                             self.get_dealer(llurl, location)
@@ -375,7 +376,7 @@ class YicheDealer(object):
                 dsalearea = inf.find('p', 'tel').find('span', 'sales-area').string  # 售卖地区
             except Exception, e:
                 print lurl, dname, location['pname'], location['mainbrand'], location['bname'], inf.find('p', 'tel')
-                raw_input('raw_input:')
+                raise
             dcity = dealer.find('div', 'col-xs-7 middle').p.string.split(' ')[0]  # 所在城市
             dlocation = dealer.find('div', 'col-xs-7 middle').p.string.split(' ')[1].replace('&nbsp;', '')  # 所在地区
             now_time = general_helper.get_now()
@@ -406,6 +407,7 @@ class YicheDealer(object):
                 print dpromotetitle, dpromoteurl, dpromoteday
                 print add.encode('gbk', 'ignore'), dtel, dsalearea
                 print lurl
+                raise
                 # raw_input('raw_input:')
 
         # print 'get one page'
@@ -427,11 +429,18 @@ class YicheDealer(object):
 
     def crawl(self):
         # 获取所有省份
+        logger.info("start: get all provinces.")
         self.get_all_province()
+        logger.info("finish: get all provinces.")
 
         # 获取主品牌和品牌
+        logger.info("start: get main brands.")
         self.get_main_brand()
+        logger.info("finish: get main brands.")
+
+        logger.info("start: get brands.")
         self.get_brand()
+        logger.info("finish: get brands.")
 
         success = 0
         start_time = general_helper.get_now()
