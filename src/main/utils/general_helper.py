@@ -7,6 +7,7 @@
 # version: 
 # description:
 # ----------------------------------------------------------------------------------------------------------------------
+
 import json
 import re
 import time
@@ -18,19 +19,32 @@ import requests
 import commons
 
 import random
+import os
+
 
 logger = logging.getLogger("logger01")
-
+file_path = os.path.dirname(__file__)
 user_agent_list = []
-f = open('../../config/user_agent.txt', 'r')
-for date_line in f:
-    user_agent_list.append(date_line.replace('\r\n', ''))
+f = open(file_path + '/../../config/user_agent.txt', 'r')
+for line in f:
+    user_agent_list.append(line.replace('\r\n', ''))
+f.close()
 
+proxy_list = []
+f = open(file_path + '/../../config/proxy.txt', 'r')
+for line in f:
+    proxy_list.append(line.replace('\n', ''))
+f.close()
 
-# user_agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'
 
 def get_now():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+
+
+def str_to_time(string):
+    timestr = re.findall(r'\d+', string)
+    times = '-'.join(timestr).decode('utf-8')
+    return times
 
 
 def get_json_response(url):
@@ -40,13 +54,16 @@ def get_json_response(url):
     :param url:
     :return:
     """
-    user_agent = random.choice(user_agent_list).strip("\r\n")
-    logger.debug("user-agent: %s " % user_agent)
+    user_agent = random.choice(user_agent_list).strip("\r\n ")
     request = urllib2.Request(url)
     request.add_header('User-Agent',
                        user_agent)
+
+    # proxy = random.choice(proxy_list).strip("\r\n ")
+    # request.set_proxy(proxy, 'http')
+
     retries = 3
-    while (retries > 0):
+    while retries > 0:
         try:
             response = urllib2.urlopen(request, timeout=30).read().decode('utf-8', 'ignore')
             content = re.findall(r'(?<=\().*(?=\))', response)[0]
@@ -56,7 +73,7 @@ def get_json_response(url):
             retries -= 1
             logger.debug("%s times to retry" % format(str(retries)))
             time.sleep(5)
-    if retries ==0:
+    if retries == 0:
         raise
     try:
         response = json.loads(content)
@@ -76,10 +93,12 @@ def get_response(url, keep_alive=True):
     """
     response = None
     user_agent = random.choice(user_agent_list).strip("\r\n ")
-    logger.debug("user-agent: %s " % user_agent)
     request = urllib2.Request(url)
     request.add_header('User-Agent', user_agent)
-    #                   'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36')
+
+    # proxy = random.choice(proxy_list).strip("\r\n ")
+    # request.set_proxy(proxy, 'http')
+
     retries = 3
     while retries > 0:
         try:
@@ -94,7 +113,7 @@ def get_response(url, keep_alive=True):
             retries -= 1
             logger.debug("%s times left to retry" % format(str(retries)))
             time.sleep(5)
-    if retries ==0:
+    if retries == 0:
         raise
     return response
 

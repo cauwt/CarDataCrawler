@@ -38,7 +38,7 @@ class YichecarSpider(scrapy.Spider):
             item['main_brand_id'] = match.group(1).title()
             item['main_brand_name'] = match.group(2).title()
             item['main_brand_url'] = main_url[:-1]+match.group(3).title().lower()
-            # print u"id={},name={},url={}".format(match.group(1).title(), match.group(2).title(), main_url[:-1]+match.group(3).title().lower())
+            # print u"id={},name={},url={}".format(match.group(1).title(), match.group(2).title(), main_url0[:-1]+match.group(3).title().lower())
             # save to mysql, one by one
             params = (item['main_brand_id'], item['main_brand_name'], item['main_brand_url'])
             self.dbHelper.insert(sql, params)

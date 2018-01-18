@@ -16,4 +16,4 @@ delete from province;
 delete from crawl_log;
 delete from dealer_raw;
 
-
+select count(*) from dealer_raw

@@ -11,8 +11,10 @@
 import logging.config
 import logging
 from utils.mysqldb_helper import MysqldbHelper
+import os
 
-logging.config.fileConfig("../../config/logger.conf")
+file_path = os.path.dirname(__file__)
+logging.config.fileConfig(file_path + "/../../config/logger.conf")
 logger = logging.getLogger("logger01")
 mysql = MysqldbHelper()
 

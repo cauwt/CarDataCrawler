@@ -63,7 +63,7 @@ class YicheDealer(object):
 
         以上两种方法结合互补执行
 
-        :param mainurl:
+        :param main_url0:
         :param bshow:
         :return:
         """
@@ -212,7 +212,7 @@ class YicheDealer(object):
                         logger.debug("%s,%s,%s,%s" % (main_brand_name, main_brand_id, main_brand_show, len(child)))
                         for b in child:
                             brand = {'mainbrand': main_brand_name, 'mainid': main_brand_id, 'mainshow': main_brand_show,
-                                     'mainurl': main_brand_url, 'mainnum': main_brand_num,
+                                     'main_url0': main_brand_url, 'mainnum': main_brand_num,
                                      'name': b['name'].decode('utf-8'), 'url': b['url'], 'num': b['num'],
                                      'show': b['url'].split('/')[2]}
                             # print b['url'].split('/')
