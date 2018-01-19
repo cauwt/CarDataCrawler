@@ -123,7 +123,7 @@ def get_promotion_price(durl, main_url):
             else:
                 continue
     else:
-        print 'this dealer has not promotion price'
+        print 'this dealer has no promotion price'
         print durl
     return modeldown
 
