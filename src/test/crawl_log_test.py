@@ -8,11 +8,10 @@
 # description:
 # ----------------------------------------------------------------------------------------------------------------------
 
-from utils.mysqldb_helper import MysqldbHelper
 from utils import general_helper
+from utils.commons import mysql
 
 if __name__ == '__main__':
-    mysql = MysqldbHelper()
     # 1. insert
     success = 0
     start_time = general_helper.get_now()
@@ -27,7 +26,7 @@ if __name__ == '__main__':
           u"select id from ( " \
           u"select max(id) as id from crawl_log as a where project_name='易车商家抓取') as s)"
     params = (success, end_time)
-    mysql.update_by_param(sql, params)
+    mysql.update(sql, params)
 
 pass
 

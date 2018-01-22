@@ -43,3 +43,5 @@ CREATE TABLE if not exists
     UPDATE mysql.user SET Password=PASSWORD('root') where USER='root';
     
   GO
+  
+  SELECT * FROM promotion_price limit 100;

@@ -1,99 +1,83 @@
 #!/usr/bin/env python
-#  -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------------------------------------------------------
+# file: mysqldb_helper
+# author: eva
+# date: 2018/1/17
+# version:
+# description:mysql助手类
+# ----------------------------------------------------------------------------------------------------------------------
 
 
 import MySQLdb
 
-class MysqldbHelper:
 
-    def get_connection(self):
-        """ 获取数据库连接
-        :return: 数据库连接
+class MysqlHelper:
+    def __init__(self, host, user, password, db, charset='utf8'):
+        """初始化，建立连接
+
+        :param host:
+        :param user:
+        :param password:
+        :param db:
+        :param charset:
         """
+        self.host = host
+        self.user = user
+        self.password = password
+        self.db = db
+        self.charset = charset
         try:
-            conn = MySQLdb.connect(host='localhost', user='crawler', passwd='crawler', db='car_data', port=3306,
-                                   charset='utf8')
-            return conn
-        except MySQLdb.Error, e:
-            print "Mysqldb Error:%s" % e
-            # ,返回结果为字典
+            self.conn = MySQLdb.connect(host=self.host, user=self.user, passwd=self.password, db=self.db)
+            self.conn.set_character_set(self.charset)
+            self.cursor = self.conn.cursor(MySQLdb.cursors.DictCursor)
+        except MySQLdb.Error as e:
+            print ('MySql Error : %d %s' % (e.args[0], e.args[1]))
 
-    def select(self, sql):
+    def select(self, sql, params=()):
         """查询方法，使用con.cursor(MySQLdb.cursors.DictCursor)
+        :param params:
         :param sql: 查询语句
         :return:返回结果为字典
         """
         try:
-            con = self.get_connection()
-            print con
-            cur = con.cursor(MySQLdb.cursors.DictCursor)
-            cur.execute(sql)
-            fc = cur.fetchall()
+            self.cursor.execute(sql, params)
+            fc = self.cursor.fetchall()
             return fc
         except MySQLdb.Error, e:
             print "Mysqldb Error:%s" % e
             raise
-        finally:
-            cur.close()
-            con.close()
-            # 带参数的更新方法,eg:sql='insert into pythontest values(%s,%s,%s,now()',params=(6,'C#','good book')
 
-    def update_by_param(self, sql, params):
-        """
+    def update(self, sql, params=()):
+        """更新
 
         :param sql:
         :param params:
         :return:
         """
         try:
-            con = self.get_connection()
-            cur = con.cursor()
-            count = cur.execute(sql, params)
-            con.commit()
+            count = self.cursor.execute(sql, params)
+            self.conn.commit()
             return count
         except MySQLdb.Error, e:
-            con.rollback()
+            self.conn.rollback()
             print "Mysqldb Error:%s" % e
             raise
-        finally:
-            cur.close()
-            con.close()
-            # 不带参数的更新方法
 
-    def update(self, sql):
-        try:
-            con = self.get_connection()
-            cur = con.cursor()
-            count = cur.execute(sql)
-            con.commit()
-            return count
-        except MySQLdb.Error, e:
-            con.rollback()
-            print "Mysqldb Error:%s" % e
-            raise
-        finally:
-            cur.close()
-            con.close()
-
-    def insert(self, sql, params):
+    def insert(self, sql, params=()):
         """ 插入数据，单条
         :param sql: sql语句
         :param params: 要插入的数据，元组形式
         :return: 记录数
         """
         try:
-            con = self.get_connection()
-            cur = con.cursor()
-            count = cur.execute(sql, params)
-            con.commit()
+            count = self.cursor.execute(sql, params)
+            self.conn.commit()
             return count
         except MySQLdb.Error, e:
-            con.rollback()
+            self.conn.rollback()
             print "Mysqldb Error:%s" % e
             raise
-        finally:
-            cur.close()
-            con.close()
 
     def insert_batch(self, sql, params):
         """ 插入数据，批量
@@ -102,15 +86,14 @@ class MysqldbHelper:
         :return: 记录数
         """
         try:
-            con = self.get_connection()
-            cur = con.cursor()
-            count = cur.executemany(sql, params)
-            con.commit()
+            count = self.cursor.executemany(sql, params)
+            self.conn.commit()
             return count
         except MySQLdb.Error, e:
-            con.rollback()
+            self.conn.rollback()
             print "Mysqldb Error:%s" % e
             raise
-        finally:
-            cur.close()
-            con.close()
+
+    def close(self):
+        self.cursor.close()
+        self.conn.close()

@@ -2,7 +2,7 @@
 import scrapy
 import re
 
-from utils.mysqldb_helper import MysqldbHelper
+from utils.mysqldb_helper import MysqlHelper
 
 from yichecar.items import YichecarItem
 
@@ -16,7 +16,7 @@ class YichecarSpider(scrapy.Spider):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 "
                              "(KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36"}
     pattern = re.compile(r'{type:"mb",id:(\d+),name:"([^"]+)",url:"(/tree_chexing/mb_\d+/)",cur:\d+,num:\d+}')
-    dbHelper = MysqldbHelper()
+    dbHelper = MysqlHelper()
 
     def __init__(self):
         pass

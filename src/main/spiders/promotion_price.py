@@ -18,6 +18,13 @@ import multiprocessing
 from utils.commons import mysql
 from utils import general_helper
 
+from utils.kafka_util import KafkaUtilProducer
+
+bootstrap_servers = '192.168.171.78:9092,192.168.171.79:9092'
+kafka_topic = "promotion_price"
+
+kafka_producer = KafkaUtilProducer(bootstrap_servers=bootstrap_servers, kafka_topic=kafka_topic)
+
 
 def get_dealer_from_db():
     """从数据库中读取商家
@@ -67,7 +74,7 @@ def get_all_promotion_price(dealer_list, main_url):
                     msrp = style['stylemsrp']
                     jiangjia = style['jiangjia']
                     youhui = style['youhui']
-                    kuxun = style['kucun']
+                    kucun = style['kucun']
                     nowtime = general_helper.get_now()
                     sql = u"insert into car_data.promotion_price (dealer_id, dealer_name, model_id, model_name, model_down_url, title, " \
                           u"publish_date, begin_date, end_date, style_id, style_name, style_msrp, style_promo, style_price, " \
@@ -75,12 +82,13 @@ def get_all_promotion_price(dealer_list, main_url):
                     params = (
                         dealer_id, dealer_name, modelid, modelname, modeldownurl, title,
                         publishdate, begintime, endtime, styleid, stylename, msrp, jiangjia or '', youhui,
-                        kuxun, nowtime)
+                        kucun, nowtime)
                     try:
                         mysql.insert(sql, params)  # 插入数据
+                        # kafka_producer.send_json_data(param_dict)
                     except Exception, e:
                         print 'this is an except:', str(e)
-                        print dealer_id, dealer_name, modelid, modelname, modeldownurl, title, publishdate, begintime, endtime, styleid, stylename, msrp, jiangjia, youhui, kuxun, durl
+                        print dealer_id, dealer_name, modelid, modelname, modeldownurl, title, publishdate, begintime, endtime, styleid, stylename, msrp, jiangjia, youhui, kucun, durl
                         raise
     return
 
@@ -276,4 +284,4 @@ if __name__ == '__main__':
           u"select id from ( " \
           u"select max(id) as id from crawl_log as a where project_name= %s ) as s)"
     params = (success, end_time, project_name)
-    mysql.update_by_param(sql, params)
+    mysql.update(sql, params)

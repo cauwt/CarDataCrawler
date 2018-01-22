@@ -8,11 +8,11 @@
 # description:
 # ----------------------------------------------------------------------------------------------------------------------
 
-from utils.mysqldb_helper import MysqldbHelper
 from utils import general_helper
+from utils.commons import mysql
+
 
 if __name__ == '__main__':
-    mysql = MysqldbHelper()
     # 1. insert
     now_time = general_helper.get_now()
     sql = u"insert into province (`name`,`show`,`url`,`create_time`)\
