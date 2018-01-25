@@ -12,18 +12,17 @@
 import sys
 from bs4 import BeautifulSoup
 import re
-import time
 import multiprocessing
 
 from utils.commons import mysql
 from utils import general_helper
 
-from utils.kafka_util import KafkaUtilProducer
+# from utils.kafka_util import KafkaUtilProducer
 
-bootstrap_servers = '192.168.171.78:9092,192.168.171.79:9092'
-kafka_topic = "promotion_price"
+# bootstrap_servers = '192.168.171.78:9092,192.168.171.79:9092'
+# kafka_topic = "promotion_price"
 
-kafka_producer = KafkaUtilProducer(bootstrap_servers=bootstrap_servers, kafka_topic=kafka_topic)
+# kafka_producer = KafkaUtilProducer(bootstrap_servers=bootstrap_servers, kafka_topic=kafka_topic)
 
 
 def get_dealer_from_db():
@@ -44,6 +43,8 @@ def get_all_promotion_price(dealer_list, main_url):
     :param main_url:
     :return:
     """
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
     for dealer in dealer_list:
         dealer_id = dealer['dealer_id']
         dealer_name = dealer['dealer_name']
@@ -112,7 +113,7 @@ def get_promotion_price(durl, main_url):
         print 'this dealer has jiangjia'
         downbox = jiangjiasoup.find_all('tr')
         for tr in downbox:
-            if tr.find_all('td') != []:  # 有的商家降价新闻中并没有车款降价
+            if tr.find_all('td'):  # 有的商家降价新闻中并没有车款降价
                 model = {}
                 a = tr.find('td', 't_l').find('a')
                 model['name'] = a.string.decode('utf-8')  # 车型名
@@ -142,6 +143,8 @@ def get_promotion_price_by_model(download_url):
     :param download_url:
     :return:
     """
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
     html = general_helper.get_response(download_url)
     # print html.decode('utf-8','ignore').encode('gbk','ignore')
 
@@ -237,7 +240,7 @@ def get_promotion_price_by_model(download_url):
             return table_list
 
 
-if __name__ == '__main__':
+def crawl():
     reload(sys)
     sys.setdefaultencoding("utf-8")
     main_url0 = 'http://dealer.bitauto.com'
@@ -251,6 +254,7 @@ if __name__ == '__main__':
     mysql.insert(fsql, params)
     relist = get_dealer_from_db()
     print 'success get dealer', len(relist)
+    # 按日期创建一个新的表格
 
     # relist1 = relist[0:10]
     # get_all_promotion_price(relist1, main_url0)
@@ -285,3 +289,8 @@ if __name__ == '__main__':
           u"select max(id) as id from crawl_log as a where project_name= %s ) as s)"
     params = (success, end_time, project_name)
     mysql.update(sql, params)
+
+if __name__ == '__main__':
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+    crawl()

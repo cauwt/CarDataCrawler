@@ -326,7 +326,7 @@ def get_dealer(lurl, location):
     soup = BeautifulSoup(html, 'lxml')
     # print 'begin get dealer'
     dealerbox = soup.find('div', 'main-inner-section sm dealer-box')
-    dealerlist = dealerbox = soup.find_all('div', 'row dealer-list')
+    dealerlist = dealerbox.find_all('div', 'row dealer-list')
     # print dealerlist
     for dealer in dealerlist:
         inf = dealer.find('div', 'col-xs-6 left')

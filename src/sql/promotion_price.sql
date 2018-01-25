@@ -18,5 +18,3 @@ create table if not exists car_data.promotion_price(
 `create_time` datetime,-- 时间
 primary key (`id`)
 ) engine = InnoDB default charset=utf8 auto_increment =1
-
-drop table car_data.promotion_price
