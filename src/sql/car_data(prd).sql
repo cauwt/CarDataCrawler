@@ -1,43 +1,7 @@
 SELECT
     Host,
     USER,
-    Password,
-    Select_priv,
-    Insert_priv,
-    Update_priv,
-    Delete_priv,
-    Create_priv,
-    Drop_priv,
-    Reload_priv,
-    Shutdown_priv,
-    Process_priv,
-    File_priv,
-    Grant_priv,
-    References_priv,
-    Index_priv,
-    Alter_priv,
-    Show_db_priv,
-    Super_priv,
-    Create_tmp_table_priv,
-    Lock_tables_priv,
-    Execute_priv,
-    Repl_slave_priv,
-    Repl_client_priv,
-    Create_view_priv,
-    Show_view_priv,
-    Create_routine_priv,
-    Alter_routine_priv,
-    Create_user_priv,
-    Event_priv,
-    Trigger_priv,
-    ssl_type,
-    ssl_cipher,
-    x509_issuer,
-    x509_subject,
-    max_questions,
-    max_updates,
-    max_connections,
-    max_user_connections
+    Password
 FROM
     USER;
 CREATE USER 'zkpk'@'localhost' IDENTIFIED BY 'zkpk';
@@ -99,5 +63,30 @@ WHERE
  show create table dealer_raw;
  
  select * from dealer_raw where id = 3808
- 
- show create table promotion_price;
+select m.* from dealer_raw as m
+where m.dealer_id in (select s. dealer_id from dealer_raw as  s group by s.dealer_id having count(*) >1 )
+order by m.dealer_id
+drop table if exists dealer
+ --发现有重复的dealer，所以，需要首先去除重复的dealer，原因：经营多个主品牌
+create table if not exists dealer as 
+SELECT distinct dealer_id, province_name, city_name, location_name, dealer_type,dealer_url, dealer_name, dealer_brand, dealer_add, dealer_tel FROM dealer_raw
+
+create temporary table tmp_dealer as 
+SELECT distinct dealer_id, province_name, city_name, location_name, dealer_type, dealer_name, dealer_brand, dealer_add, dealer_tel, sale_area FROM dealer_raw
+create temporary table tmp_dealer2 as 
+SELECT distinct dealer_id, province_name, city_name, location_name, dealer_type, dealer_name, dealer_brand, dealer_add, dealer_tel, sale_area FROM dealer_raw
+drop table if exists tmp_dealer
+drop table if exists tmp_dealer2
+
+select * from tmp_dealer as m where m.dealer_id in (select s. dealer_id from tmp_dealer2 as  s group by s.dealer_id having count(*) >1 )
+
+select count(*) from (SELECT distinct dealer_id, province_name, city_name, location_name, dealer_type, dealer_name, dealer_brand, dealer_add, dealer_tel, sale_area FROM dealer_raw) s;
+
+select count(distinct dealer_id) from dealer_raw
+
+select * from promotion_price limit 10;
+GO
+--创建表格 car
+-- 见car.sql
+INSERT INTO car_data.car ( main_brand_id, main_brand_name, brand_id, brand_name, serial_id, serial_name, serial_spell, serial_show_name, car_id, car_name, car_gear, car_engine_displacement, car_msrp, car_sale_year, create_time) VALUES ( 0, '', 0, '', 0, '', '', '', 0, '', '', '', 0, '', now());
+
