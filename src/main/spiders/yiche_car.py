@@ -85,7 +85,7 @@ def insert_car_to_db(brand_serial_car_list):
     """
     sql = 'INSERT INTO car_data.car ( main_brand_id, main_brand_name, brand_id, brand_name, ' \
           'serial_id, serial_name, serial_spell, serial_show_name, car_id, car_name, car_gear, ' \
-          'car_engine_displacement, car_msrp, car_sale_year, create_time) ' \
+          'car_engine, car_msrp, car_sale_year, create_time) ' \
           'VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
     now = general_helper.get_now()
     params_list = []
@@ -93,7 +93,7 @@ def insert_car_to_db(brand_serial_car_list):
     for car in brand_serial_car_list:
         params = (car['main_brand_id'], car['main_brand_name'], car['brand_id'], car['brand_name'],
                   car['serial_id'], car['serial_name'], car['serial_spell'], car['serial_show_name'],
-                  car['car_id'], car['car_name'], car['car_gear'], car['car_engine_displacement'],
+                  car['car_id'], car['car_name'], car['car_gear'], car['car_engine'],
                   car['car_msrp'] or 0.0, car['car_sale_year'], now)
         params_list.append(params)
 
@@ -111,7 +111,7 @@ def get_and_insert_car(brand_serial_list):
     car_id,
     car_name,
     car_gear,
-    car_engine_displacement,
+    car_engine,
     car_msrp,
     car_sale_year
 
@@ -134,7 +134,7 @@ def get_and_insert_car(brand_serial_list):
             car_row_list = html.xpath('//table[@id="compare_sale"]/tbody/tr')
             for car_row in car_row_list:
                 if 'class' in car_row.attrib and car_row.attrib['class'] == 'table-tit':  # 分组表头
-                    car_engine_displacement = str(car_row.xpath('string(th[@class="first-item"])')).decode('utf-8')
+                    car_engine = str(car_row.xpath('normalize-space(th[@class="first-item"])')).decode('utf-8')
                 else:  # 车款
                     car_id = int(re.search(r'\d+', car_row.attrib['id']).group().strip())
                     car_name = str(car_row.xpath('td/a/text()')[0]).strip().decode('utf-8')
@@ -143,18 +143,18 @@ def get_and_insert_car(brand_serial_list):
                     car_msrp = car_msrp_match.group() if car_msrp_match else 0.0
 
                     car_sale_year = re.search(r'^\d+', car_name).group() or ''
-                    brand_serial_car = {'main_brand_id': 3,
-                                        'main_brand_name': u'宝马',
-                                        'brand_id': 20005,
-                                        'brand_name': u'进口宝马',
-                                        'serial_id': 3486,
-                                        'serial_name': u'4系',
+                    brand_serial_car = {'main_brand_id': brand['main_brand_id'],
+                                        'main_brand_name': brand['main_brand_name'],
+                                        'brand_id': brand['brand_id'],
+                                        'brand_name': brand['brand_name'],
+                                        'serial_id': serial['serial_id'],
+                                        'serial_name': serial['serial_name'],
                                         'serial_spell': serial_spell,
                                         'serial_show_name': serial_show_name,
                                         'car_id': car_id,
                                         'car_name': car_name,
                                         'car_gear': car_gear,
-                                        'car_engine_displacement': car_engine_displacement,
+                                        'car_engine': car_engine,
                                         'car_msrp': car_msrp,
                                         'car_sale_year': car_sale_year
                                         }

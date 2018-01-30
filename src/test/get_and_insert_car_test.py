@@ -28,7 +28,7 @@ if __name__ == '__main__':
     brand_serial_car_list = []
     for car_row in car_row_list:
         if 'class' in car_row.attrib and car_row.attrib['class'] == 'table-tit':  # 分组表头
-            car_engine_displacement = str(car_row.xpath('string(th[@class="first-item"])')).decode('utf-8')
+            car_engine = str(car_row.xpath('normalize-space(th[@class="first-item"])')).decode('utf-8')
         else:  # 车款
             car_id = int(re.search(r'\d+', car_row.attrib['id']).group())
             car_name = str(car_row.xpath('td/a/text()')[0]).strip().decode('utf-8')
@@ -48,7 +48,7 @@ if __name__ == '__main__':
                                 'car_id': car_id,
                                 'car_name': car_name,
                                 'car_gear': car_gear,
-                                'car_engine_displacement': car_engine_displacement,
+                                'car_engine': car_engine,
                                 'car_msrp': car_msrp,
                                 'car_sale_year': car_sale_year
                                 }

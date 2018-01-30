@@ -88,5 +88,7 @@ select * from promotion_price limit 10;
 GO
 --创建表格 car
 -- 见car.sql
-INSERT INTO car_data.car ( main_brand_id, main_brand_name, brand_id, brand_name, serial_id, serial_name, serial_spell, serial_show_name, car_id, car_name, car_gear, car_engine_displacement, car_msrp, car_sale_year, create_time) VALUES ( 0, '', 0, '', 0, '', '', '', 0, '', '', '', 0, '', now());
-
+select count(distinct car_id),  count(*) from  car_data.car
+select * from car_data.car
+delete from car_data.car
+-------------------------------------------------------------------------------------------------------------
